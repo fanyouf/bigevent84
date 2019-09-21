@@ -12,5 +12,10 @@ var user = {
       // res 是本次请求，从服务器回来的数据
       callBack(res);
     });
+  },
+  logout: function(callBack) {
+    $.post('http://localhost:8000/admin/logout', function(res) {
+      callBack(res);
+    });
   }
 };
