@@ -16,9 +16,9 @@
     <div class="sider">
       <a href="#" class="logo"><img src="images/logo02.png" alt="logo"/></a>
       <div class="user_info">
-        <img src="images/2.jpg" alt="person" />
-        <span>欢迎&nbsp;&nbsp;李思思</span>
-        <b>管理员12377777777</b>
+        <img id="userImg" src="images/2.jpg" alt="person" />
+        <span>欢迎&nbsp;&nbsp;<i style="font-style: normal;" id="userName"></i></span>
+        <b>管理员</b>
       </div>
       <div class="menu">
         <div class="level01 active">
@@ -139,12 +139,21 @@
     </script>
 
     <script src="./js/utils/user.js"></script>
+
     <script>
+      $(function() {
+        user.getInfo(function(res) {
+          console.log(res);
+          if (res.code === 200) {
+            $('#userName').html(res.data.nickname);
+            $('#userImg').attr('src', res.data.user_pic);
+          }
+        });
+      });
       // 给按钮添加点击事件
       // 1.调用 退出功能
       $('#btnLogout').click(function() {
         // todos:用模态框来代替
-        
         if (window.confirm('确定要退出吗？')) {
           user.logout(function(res) {
             if (res.code == 200) {
