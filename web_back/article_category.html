@@ -103,6 +103,17 @@
     </div>
     <script src="./js/utils/config.js"></script>
     <script src="./js/utils/category.js"></script>
+    <script id="tmp" type="text/html">
+
+      <tr>
+        <td>奇趣事</td>
+        <td>funny</td>
+        <td class="text-center">
+          <a href='javascript:editTr({"id":"2","slug":"funny","name":"奇趣事"});' class="btn btn-info btn-xs">编辑</a>
+          <a href="javascript:deleteTr( 2 );" class="btn btn-danger btn-xs">删除</a>
+        </td>
+      </tr>
+    </script>
     <script>
       $('#addModal').modal({
         show: false,
@@ -126,7 +137,7 @@
         }
       });
     </script>
-
+    <script src="./js/lib/template-web.js"></script>
     <script>
       $(function() {
         category.show(function(res) {
