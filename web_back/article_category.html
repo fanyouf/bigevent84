@@ -111,7 +111,7 @@
         <td>{{item.slug}}</td>
         <td class="text-center">
           <a href='javascript:editTr({"id":"2","slug":"funny","name":"奇趣事"});' class="btn btn-info btn-xs">编辑</a>
-          <a href="javascript:deleteTr( 2 );" class="btn btn-danger btn-xs">删除</a>
+          <a href="javascript:deleteTr( {{item.id}} );" class="btn btn-danger btn-xs">删除</a>
         </td>
       </tr>
       {{/each}}
@@ -141,6 +141,19 @@
     </script>
     <script src="./js/lib/template-web.js"></script>
     <script>
+      function deleteTr(id) {
+        // todos : 使用模态框去实现 删除确认
+        if (window.confirm('你确定要删除吗？')) {
+          // alert(id);
+          category.del(id, function(res) {
+            // console.log(res);
+            if (res.code === 200) {
+              doQuery();
+            }
+          });
+        }
+      }
+
       function doQuery() {
         category.show(function(res) {
           console.log(res);
