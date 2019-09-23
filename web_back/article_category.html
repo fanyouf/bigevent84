@@ -28,46 +28,19 @@
             </tr>
           </thead>
           <tbody id="tableContent">
-            <tr>
-              <td>未分类</td>
-              <td>uncategorized</td>
-              <td class="text-center">
-                <a href='javascript:editTr({"id":"1","slug":"uncategorized","name":"未分类"});' class="btn btn-info btn-xs">编辑</a>
-                <a href="javascript:deleteTr( 1 );" class="btn btn-danger btn-xs">删除</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td>奇趣事</td>
-              <td>funny</td>
-              <td class="text-center">
-                <a href='javascript:editTr({"id":"2","slug":"funny","name":"奇趣事"});' class="btn btn-info btn-xs">编辑</a>
-                <a href="javascript:deleteTr( 2 );" class="btn btn-danger btn-xs">删除</a>
-              </td>
-            </tr>
-
-            <tr>
-              <td>会生活</td>
-              <td>living</td>
-              <td class="text-center">
-                <a href='javascript:editTr({"id":"3","slug":"living","name":"会生活"});' class="btn btn-info btn-xs">编辑</a>
-                <a href="javascript:deleteTr( 3 );" class="btn btn-danger btn-xs">删除</a>
-              </td>
-            </tr>
-
-            <tr>
+            <!-- <tr>
               <td>爱旅行</td>
               <td>travel</td>
               <td class="text-center">
                 <a href='javascript:editTr({"id":"4","slug":"travel","name":"爱旅行"});' class="btn btn-info btn-xs">编辑</a>
                 <a href="javascript:deleteTr( 4 );" class="btn btn-danger btn-xs">删除</a>
               </td>
-            </tr>
+            </tr> -->
           </tbody>
           <tfoot>
             <tr>
               <td colspan="3" class="text-center">
-                <a href="#" class="btn btn-success" data-toggle="modal" data-target="#addModal">新增分类</a>
+                <a href="#" class="btn btn-success" data-toggle="modal" id="btnShowAddModal" data-target="#addModal">新增分类</a>
               </td>
             </tr>
           </tfoot>
@@ -84,6 +57,7 @@
           </div>
           <div class="modal-body">
             <form>
+              <input type="hidden" class="form-control" id="category_id" />
               <div class="form-group">
                 <label for="category_name" class="control-label">分类名称:</label>
                 <input type="text" class="form-control" id="category_name" />
@@ -98,6 +72,7 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-default" id="model_shutoff">关闭</button>
             <button type="button" class="btn btn-primary" id="model_add">新增</button>
+            <!-- <button type="button" class="btn btn-primary" id="model_saveEdit">新增</button> -->
           </div>
         </div>
       </div>
@@ -110,7 +85,7 @@
         <td>{{item.name}}</td>
         <td>{{item.slug}}</td>
         <td class="text-center">
-          <a href='javascript:editTr({"id":"2","slug":"funny","name":"奇趣事"});' class="btn btn-info btn-xs">编辑</a>
+          <a href='javascript:editTr({"id":"{{item.id}}","slug":"{{item.slug}}","name":"{{item.name}}" });' class="btn btn-info btn-xs">编辑</a>
           <a href="javascript:deleteTr( {{item.id}} );" class="btn btn-danger btn-xs">删除</a>
         </td>
       </tr>
@@ -132,15 +107,17 @@
       //   $('#addModal').modal('hide');
       // });
 
-      $('.category_table').delegate('a', 'click', function() {
-        if ($(this).hasClass('btn-info')) {
-          $('#addModal .modal-title').html('修改分类名称');
-          $('#addModal').modal('show');
-        }
-      });
+      // $('.category_table').delegate('a', 'click', function() {
+      //   if ($(this).hasClass('btn-info')) {
+      //     $('#addModal .modal-title').html('修改分类名称');
+      //     $('#addModal').modal('show');
+      //   }
+      // });
     </script>
     <script src="./js/lib/template-web.js"></script>
     <script>
+      var status = '添加'; //是添加还是修改
+
       function deleteTr(id) {
         // todos : 使用模态框去实现 删除确认
         if (window.confirm('你确定要删除吗？')) {
@@ -152,6 +129,18 @@
             }
           });
         }
+      }
+
+      // 编辑;
+      function editTr(obj) {
+        $('#addModal').modal('show');
+        $('#addModal .modal-title').text('修改类型');
+        $('#addModal #model_add').text('保存修改');
+        status = '编辑';
+        // 给文本框赋值
+        $('#category_id').val(obj.id); // 隐藏域
+        $('#category_name').val(obj.name);
+        $('#category_slug').val(obj.slug);
       }
 
       function doQuery() {
@@ -169,7 +158,17 @@
       $(function() {
         doQuery();
       });
-      // 新增
+
+      // 新增分类
+      $('#btnShowAddModal').click(function() {
+        $('#category_name').val('');
+        $('#category_slug').val('');
+        status = '添加';
+        $('#addModal .modal-title').text('新增分类');
+        $('#addModal #model_add').text('新增');
+      });
+
+      // 新增和编程共用一个模态框
       $('#model_add').click(function() {
         // 用户的数据，进行简单判断
         var name = $('#category_name').val();
@@ -178,15 +177,29 @@
         if (name === '' || slug === '') {
           $('#divReuslt').text('名字和别名不能为空');
         } else {
-          category.add(name, slug, function(res) {
-            // console.log(res);
-            if (res.code === 200) {
-              $('#addModal').modal('hide');
-              doQuery();
-            } else {
-              $('#divReuslt').text(res.msg);
-            }
-          });
+          if (status === '添加') {
+            category.add(name, slug, function(res) {
+              // console.log(res);
+              if (res.code === 200) {
+                $('#addModal').modal('hide');
+                doQuery();
+              } else {
+                $('#divReuslt').text(res.msg);
+              }
+            });
+          } else {
+            // 编辑
+            var id = $('#category_id').val();
+            category.edit(id, name, slug, function(res) {
+              // console.log(res);
+              if (res.code === 200) {
+                $('#addModal').modal('hide');
+                doQuery();
+              } else {
+                $('#divReuslt').text(res.msg);
+              }
+            });
+          }
         }
       });
     </script>
