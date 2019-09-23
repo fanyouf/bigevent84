@@ -85,13 +85,14 @@
           <div class="modal-body">
             <form>
               <div class="form-group">
-                <label for="recipient-name" class="control-label">分类名称:</label>
-                <input type="text" class="form-control" id="recipient-name" />
+                <label for="category_name" class="control-label">分类名称:</label>
+                <input type="text" class="form-control" id="category_name" />
               </div>
               <div class="form-group">
-                <label for="message-text" class="control-label">分类别名:</label>
-                <input type="text" class="form-control" id="recipient-name" />
+                <label for="category_slug" class="control-label">分类别名:</label>
+                <input type="text" class="form-control" id="category_slug" />
               </div>
+              <div class="alert alert-primary" role="alert" id="divReuslt"></div>
             </form>
           </div>
           <div class="modal-footer">
@@ -126,10 +127,10 @@
         $('#addModal').modal('hide');
       });
 
-      $('#model_add').click(function() {
-        alert('add');
-        $('#addModal').modal('hide');
-      });
+      // $('#model_add').click(function() {
+      //   alert('add');
+      //   $('#addModal').modal('hide');
+      // });
 
       $('.category_table').delegate('a', 'click', function() {
         if ($(this).hasClass('btn-info')) {
@@ -140,7 +141,7 @@
     </script>
     <script src="./js/lib/template-web.js"></script>
     <script>
-      $(function() {
+      function doQuery() {
         category.show(function(res) {
           console.log(res);
           // res = { code:200,data:[],msg:"分类获取完毕"}
@@ -151,6 +152,29 @@
           // $('#tableContent').html(htmlStr);
           $('#tableContent').html(template('tmp', res));
         });
+      }
+      $(function() {
+        doQuery();
+      });
+      // 新增
+      $('#model_add').click(function() {
+        // 用户的数据，进行简单判断
+        var name = $('#category_name').val();
+        var slug = $('#category_slug').val();
+        console.log(name, slug);
+        if (name === '' || slug === '') {
+          $('#divReuslt').text('名字和别名不能为空');
+        } else {
+          category.add(name, slug, function(res) {
+            // console.log(res);
+            if (res.code === 200) {
+              $('#addModal').modal('hide');
+              doQuery();
+            } else {
+              $('#divReuslt').text(res.msg);
+            }
+          });
+        }
       });
     </script>
   </body>
