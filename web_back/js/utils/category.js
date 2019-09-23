@@ -20,6 +20,7 @@ var category = {
       callBack(res);
     });
   },
+  
   edit: function(id, name, slug, callBack) {
     $.post(URLIST.category_edit, { id: id, name: name, slug: slug }, function(res) {
       callBack(res);
